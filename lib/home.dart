@@ -17,19 +17,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, String>> _books = [
     {
-      'title': 'Книга 1',
+      'title': 'English Stories',
       'image': 'https://picsum.photos/id/1011/400/200',
-      'description': 'Описание книги 1',
+      'description': 'Читай и учись новым словам',
     },
     {
-      'title': 'Книга 2',
+      'title': 'Grammar Boost',
       'image': 'https://picsum.photos/id/1012/400/200',
-      'description': 'Описание книги 2',
+      'description': 'Разбери грамматику по полочкам',
     },
     {
-      'title': 'Книга 3',
+      'title': 'Daily Dialogues',
       'image': 'https://picsum.photos/id/1013/400/200',
-      'description': 'Описание книги 3',
+      'description': 'Развивай разговорный английский',
     },
   ];
 
@@ -75,26 +75,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onBookTap(Map<String, String> book) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(book['title'] ?? ''),
-        content: Text('Открыть "${book['title']}" для чтения или просмотра?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Открыта книга: ${book['title']}')),
-              );
-            },
-            child: const Text('Открыть'),
-          ),
-        ],
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              book['title'] ?? '',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              book['description'] ?? '',
+              style: TextStyle(color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Открыта книга: ${book['title']}')),
+                );
+              },
+              icon: const Icon(Icons.menu_book_rounded),
+              label: const Text('Открыть книгу'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -103,98 +126,95 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       children: [
         SizedBox(
-          height: 200,
+          height: 220,
           child: PageView.builder(
             controller: _pageController,
             itemCount: _books.length,
             onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
+              setState(() => _currentPage = index);
             },
             itemBuilder: (context, index) {
               final book = _books[index];
-              return GestureDetector(
-                onTap: () => _onBookTap(book),
-                child: Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 6,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          book['image'] ?? '',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withOpacity(0.5),
-                              Colors.transparent,
-                            ],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: GestureDetector(
+                  onTap: () => _onBookTap(book),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(book['image'] ?? '', fit: BoxFit.cover),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black.withOpacity(0.6),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: 16,
-                        bottom: 16,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              book['title'] ?? '',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                shadows: [
-                                  Shadow(blurRadius: 4, color: Colors.black),
-                                ],
+                        Positioned(
+                          left: 20,
+                          bottom: 20,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                book['title'] ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              book['description'] ?? '',
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
-                                shadows: [
-                                  Shadow(blurRadius: 4, color: Colors.black),
-                                ],
+                              Text(
+                                book['description'] ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
             },
           ),
         ),
+        const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(_books.length, (index) {
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-              width: _currentPage == index ? 16 : 8,
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: _currentPage == index ? 18 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: _currentPage == index ? Colors.indigo : Colors.grey,
-                borderRadius: BorderRadius.circular(4),
+                color: _currentPage == index
+                    ? Colors.indigo
+                    : Colors.indigo.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(6),
               ),
             );
           }),
@@ -205,35 +225,60 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> titles = ['HomePage', 'Learn', 'Vocabulary', 'Profile'];
+    final List<String> titles = ['Главная', 'Изучение', 'Словарь', 'Профиль'];
 
     final List<Widget> pages = [
       SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(height: 12),
             _buildBanner(),
             const SizedBox(height: 24),
             const Text(
               'Добро пожаловать!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
-            const Text('Выберите книгу или используйте нижнюю навигацию.'),
+            const SizedBox(height: 10),
+            Text(
+              'Выберите книгу или используйте нижнюю навигацию.',
+              style: TextStyle(color: Colors.grey[700]),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
       LearnScreen(token: widget.token),
-      const Center(child: Text('Vocabulary')),
+      const Center(child: Text('Vocabulary', style: TextStyle(fontSize: 18))),
       ProfileScreen(token: widget.token, showBottomBar: false),
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        title: Text(titles[_selectedIndex]),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          titles[_selectedIndex],
+          style: const TextStyle(color: Colors.black87),
+        ),
+        centerTitle: true,
       ),
-      body: pages[_selectedIndex],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        child: pages[_selectedIndex],
+      ),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            )
+          ],
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: GNav(
           gap: 8,
@@ -245,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedIndex: _selectedIndex,
           onTabChange: _onItemTapped,
           tabs: const [
-            GButton(icon: Icons.home, text: 'Home'), 
+            GButton(icon: Icons.home, text: 'Home'),
             GButton(icon: Icons.school, text: 'Learn'),
             GButton(icon: Icons.book, text: 'Vocab'),
             GButton(icon: Icons.person, text: 'Profile'),
