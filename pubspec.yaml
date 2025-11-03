@@ -49,6 +49,7 @@ dependencies:
   lucide_icons: ^0.257.0
   youtube_player_iframe: ^5.1.1
   translator: 1.0.4+1
+  shared_preferences: ^2.3.2
 
 
 dev_dependencies:

@@ -3,6 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import '../home.dart';
 import '../LearnScreen1.dart';
 import '../ProfileScreen.dart';
+import '../VocabScreen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -26,10 +27,8 @@ class BottomNavBar extends StatelessWidget {
       nextPage = LearnScreen1(token: token);
       break;
     case 2:
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vocabulary coming soon...')),
-      );
-      return;
+      nextPage = VocabScreen(token: token);
+      break;
     case 3:
       nextPage = ProfileScreen(token: token);
       break;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'ProfileScreen.dart';
 import 'LearnScreen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'VocabScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String token;
@@ -69,6 +70,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => VocabScreen(token: widget.token)),
+      );
+      return;
+    }
     setState(() {
       _selectedIndex = index;
     });
