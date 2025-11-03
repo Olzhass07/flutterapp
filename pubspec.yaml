@@ -28,9 +28,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-
+  file_picker: ^8.0.0
+  syncfusion_flutter_pdfviewer: ^24.1.41
   flutter:
-  
+
     sdk: flutter
     
     
@@ -47,6 +48,8 @@ dependencies:
   flutter_svg: ^2.0.7
   lucide_icons: ^0.257.0
   youtube_player_iframe: ^5.1.1
+  translator: 1.0.4+1
+  pdfx: ^2.6.0
 
 
 dev_dependencies:
@@ -66,10 +69,10 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/books/
+
+  
   
 
