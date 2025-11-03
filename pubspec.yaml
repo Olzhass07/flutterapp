@@ -30,6 +30,7 @@ environment:
 dependencies:
   file_picker: ^8.0.0
   syncfusion_flutter_pdfviewer: ^24.1.41
+  audioplayers: ^5.2.0
   flutter:
 
     sdk: flutter
