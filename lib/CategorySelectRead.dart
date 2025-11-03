@@ -1,7 +1,12 @@
 ﻿import 'package:flutter/material.dart';
+import 'readCategories/BooksReadScreen.dart';
+import 'readCategories/ArticlesReadScreen.dart';
+import 'readCategories/NewsReadScreen.dart';
 
-// Read categories screen mirrors the video categories UI
-// but navigates to placeholder pages for now.
+
+
+
+
 class CategorySelectReadScreen extends StatelessWidget {
   final String? token;
 
@@ -10,10 +15,9 @@ class CategorySelectReadScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> categories = [
-      {'title': 'Tutorials', 'count': '3 materials'},
-      {'title': 'Documentaries', 'count': '3 materials'},
-      {'title': 'Movies', 'count': '5 materials'},
-      {'title': 'Podcasts', 'count': '4 materials'},
+      {'title': 'Books', 'count': '12 materials'},
+      {'title': 'Articles', 'count': '8 materials'},
+      {'title': 'News', 'count': '15 materials'},
     ];
 
     return Scaffold(
@@ -76,11 +80,20 @@ class CategorySelectReadScreen extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {
+          final lower = title.toLowerCase();
+          Widget screen;
+          if (lower == 'books') {
+            screen = BooksReadScreen(token: token);
+          } else if (lower == 'articles') {
+            screen = ArticlesReadScreen(token: token);
+          } else if (lower == 'news') {
+            screen = NewsReadScreen(token: token);
+          } else {
+            screen = BooksReadScreen(token: token);
+          }
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => _ReadPlaceholderScreen(title: title),
-            ),
+            MaterialPageRoute(builder: (context) => screen),
           );
         },
         child: AnimatedContainer(
@@ -126,11 +139,7 @@ class CategorySelectReadScreen extends StatelessWidget {
                         ),
                       ),
                       padding: const EdgeInsets.all(10),
-                      child: Icon(
-                        icon,
-                        size: 28,
-                        color: Colors.white,
-                      ),
+                      child: Icon(icon, size: 28, color: Colors.white),
                     ),
                     const Spacer(),
                     Text(
@@ -181,14 +190,12 @@ class CategorySelectReadScreen extends StatelessWidget {
 
   IconData _iconFor(String title) {
     switch (title.toLowerCase()) {
-      case 'tutorials':
-        return Icons.school_rounded;
-      case 'documentaries':
-        return Icons.movie_filter_rounded;
-      case 'movies':
-        return Icons.local_movies_rounded;
-      case 'podcasts':
-        return Icons.podcasts_rounded;
+      case 'books':
+        return Icons.menu_book_rounded;
+      case 'articles':
+        return Icons.article_rounded;
+      case 'news':
+        return Icons.newspaper_rounded;
       default:
         return Icons.folder_rounded;
     }
@@ -196,61 +203,14 @@ class CategorySelectReadScreen extends StatelessWidget {
 
   List<Color> _gradientFor(String title) {
     switch (title.toLowerCase()) {
-      case 'tutorials':
+      case 'books':
         return const [Color(0xFF4F46E5), Color(0xFF60A5FA)];
-      case 'documentaries':
+      case 'articles':
         return const [Color(0xFF2563EB), Color(0xFF34D399)];
-      case 'movies':
+      case 'news':
         return const [Color(0xFFDB2777), Color(0xFFF59E0B)];
-      case 'podcasts':
-        return const [Color(0xFF9333EA), Color(0xFF6366F1)];
       default:
         return const [Color(0xFF64748B), Color(0xFF94A3B8)];
     }
-  }
-}
-
-class _ReadPlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _ReadPlaceholderScreen({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          title,
-          style: const TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.black,
-      ),
-      extendBodyBehindAppBar: true,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FAFC), Color(0xFFFFFFFF)],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.menu_book_rounded, size: 64, color: Colors.black54),
-              SizedBox(height: 16),
-              Text(
-                'Заглушка экрана',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 8),
-              Text('Скоро добавим контент'),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
