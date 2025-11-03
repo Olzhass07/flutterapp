@@ -66,16 +66,15 @@ class _VocabScreenState extends State<VocabScreen> {
   }
 
   String _deriveUserKey(String? token) {
-    // Prefer a stable identifier embedded in JWT or similar token
     if (token == null || token.isEmpty) return 'guest';
     try {
       final parts = token.split('.');
       if (parts.length == 3) {
         String norm(String s) {
-          // base64Url normalize
           final pad = (4 - s.length % 4) % 4;
           return s.replaceAll('-', '+').replaceAll('_', '/') + '=' * pad;
         }
+
         final payloadB64 = norm(parts[1]);
         final payload = jsonDecode(utf8.decode(base64.decode(payloadB64))) as Map<String, dynamic>;
         final candidates = [
@@ -93,7 +92,6 @@ class _VocabScreenState extends State<VocabScreen> {
         }
       }
     } catch (_) {}
-    // Fallback: trim token to a short stable key to avoid super long storage keys
     return token.length > 24 ? token.substring(0, 24) : token;
   }
 
@@ -224,9 +222,8 @@ class _VocabScreenState extends State<VocabScreen> {
                                 spacing: 8,
                                 runSpacing: -4,
                                 children: [
-                                  _pill('RU: ${it['ru'] ?? ''}')
-                                      ,
-                                  _pill('KZ: ${it['kk'] ?? ''}')
+                                  _pill('RU: ${it['ru'] ?? ''}'),
+                                  _pill('KZ: ${it['kk'] ?? ''}'),
                                 ],
                               ),
                             ),
@@ -324,36 +321,64 @@ class _WordDetailsSheetState extends State<_WordDetailsSheet> {
       if (!mounted) return;
       setState(() {
         _exampleEn = "Example: I'm learning the word '${widget.word}'.";
-        _exampleRu = null;
-        _exampleKk = null;
         _synonyms = [];
         _loading = false;
       });
     }
   }
 
+  // ✅ Новый Merriam-Webster API
   Future<Map<String, dynamic>> _fetchWordDetails(String word) async {
-    final uri = Uri.parse('https://api.dictionaryapi.dev/api/v2/entries/en/' + Uri.encodeComponent(word));
+    const apiKey = '27cf7524-2f39-4244-8dce-c46007d5d46a';
+    final uri = Uri.parse(
+      'https://dictionaryapi.com/api/v3/references/learners/json/${Uri.encodeComponent(word)}?key=$apiKey',
+    );
+
     final resp = await http.get(uri).timeout(const Duration(seconds: 8));
     if (resp.statusCode != 200) return {};
+
     final data = jsonDecode(resp.body);
     if (data is! List || data.isEmpty) return {};
-    final entry = data[0] as Map<String, dynamic>;
-    final meanings = (entry['meanings'] as List?) ?? [];
+
     String? example;
     final Set<String> syns = {};
-    for (final m in meanings) {
-      final defs = (m['definitions'] as List?) ?? [];
-      for (final d in defs) {
-        if (example == null && d is Map && d['example'] is String) {
-          example = d['example'] as String;
+
+    try {
+      final first = data[0] as Map<String, dynamic>;
+      final defBlocks = first['def'] as List?;
+      if (defBlocks != null && defBlocks.isNotEmpty) {
+        final sseq = defBlocks[0]['sseq'];
+        if (sseq is List && sseq.isNotEmpty) {
+          for (final sub in sseq) {
+            final entry = sub[0];
+            if (entry is List && entry.isNotEmpty) {
+              final dt = entry[1]?['dt'];
+              if (dt is List) {
+                for (final item in dt) {
+                  if (item is List && item.length > 1 && item[0] == 'vis') {
+                    final visList = item[1];
+                    if (visList is List && visList.isNotEmpty) {
+                      final vis = visList[0];
+                      if (vis is Map && vis['t'] is String) {
+                        example = vis['t'].replaceAll(RegExp(r'\{.*?\}'), '');
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-        final dsyn = (d is Map && d['synonyms'] is List) ? List<String>.from(d['synonyms']) : <String>[];
-        syns.addAll(dsyn);
       }
-      final msyn = (m is Map && m['synonyms'] is List) ? List<String>.from(m['synonyms']) : <String>[];
-      syns.addAll(msyn);
-    }
+
+      if (first['meta'] is Map && first['meta']['syns'] is List) {
+        for (final list in first['meta']['syns']) {
+          if (list is List) syns.addAll(list.map((e) => e.toString()));
+        }
+      }
+    } catch (_) {}
+
     return {
       'example': example,
       'synonyms': syns.toList(),

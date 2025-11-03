@@ -7,6 +7,7 @@
       "name": "olzhasmobileproject",
       "version": "1.0.0+1",
       "dependencies": [
+        "audioplayers",
         "cupertino_icons",
         "file_picker",
         "flutter",
@@ -23,6 +24,47 @@
       "devDependencies": [
         "flutter_lints",
         "flutter_test"
+      ]
+    },
+    {
+      "name": "file_picker",
+      "version": "8.3.7",
+      "dependencies": [
+        "cross_file",
+        "ffi",
+        "flutter",
+        "flutter_plugin_android_lifecycle",
+        "flutter_web_plugins",
+        "path",
+        "plugin_platform_interface",
+        "web",
+        "win32"
+      ]
+    },
+    {
+      "name": "audioplayers_web",
+      "version": "4.1.0",
+      "dependencies": [
+        "audioplayers_platform_interface",
+        "flutter",
+        "flutter_web_plugins",
+        "js"
+      ]
+    },
+    {
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "audioplayers_platform_interface",
+      "version": "6.1.0",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
       ]
     },
     {
@@ -148,40 +190,53 @@
       ]
     },
     {
-      "name": "syncfusion_flutter_pdfviewer",
-      "version": "24.2.9",
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "cross_file",
+      "version": "0.3.5",
       "dependencies": [
-        "async",
-        "device_info_plus",
-        "flutter",
-        "http",
-        "intl",
-        "syncfusion_flutter_core",
-        "syncfusion_flutter_pdf",
-        "syncfusion_flutter_signaturepad",
-        "syncfusion_pdfviewer_macos",
-        "syncfusion_pdfviewer_platform_interface",
-        "syncfusion_pdfviewer_web",
-        "syncfusion_pdfviewer_windows",
-        "url_launcher",
-        "uuid",
-        "vector_math"
+        "meta",
+        "web"
       ]
     },
     {
-      "name": "file_picker",
-      "version": "8.3.7",
+      "name": "win32",
+      "version": "5.15.0",
       "dependencies": [
-        "cross_file",
-        "ffi",
-        "flutter",
-        "flutter_plugin_android_lifecycle",
-        "flutter_web_plugins",
-        "path",
-        "plugin_platform_interface",
-        "web",
-        "win32"
+        "ffi"
       ]
+    },
+    {
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
+    },
+    {
+      "name": "ffi",
+      "version": "2.1.4",
+      "dependencies": []
+    },
+    {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "flutter_plugin_android_lifecycle",
+      "version": "2.0.32",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "meta",
+      "version": "1.16.0",
+      "dependencies": []
     },
     {
       "name": "lints",
@@ -194,11 +249,6 @@
       "dependencies": [
         "async"
       ]
-    },
-    {
-      "name": "meta",
-      "version": "1.16.0",
-      "dependencies": []
     },
     {
       "name": "collection",
@@ -242,11 +292,6 @@
       ]
     },
     {
-      "name": "path",
-      "version": "1.9.1",
-      "dependencies": []
-    },
-    {
       "name": "matcher",
       "version": "0.12.17",
       "dependencies": [
@@ -270,6 +315,63 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "async",
+      "version": "2.13.0",
+      "dependencies": [
+        "collection",
+        "meta"
+      ]
+    },
+    {
+      "name": "leak_tracker_testing",
+      "version": "3.0.2",
+      "dependencies": [
+        "leak_tracker",
+        "matcher",
+        "meta"
+      ]
+    },
+    {
+      "name": "leak_tracker",
+      "version": "11.0.1",
+      "dependencies": [
+        "clock",
+        "collection",
+        "meta",
+        "path",
+        "vm_service"
+      ]
+    },
+    {
+      "name": "term_glyph",
+      "version": "1.2.2",
+      "dependencies": []
+    },
+    {
+      "name": "string_scanner",
+      "version": "1.4.1",
+      "dependencies": [
+        "source_span"
+      ]
+    },
+    {
+      "name": "source_span",
+      "version": "1.10.1",
+      "dependencies": [
+        "collection",
+        "path",
+        "term_glyph"
+      ]
+    },
+    {
+      "name": "boolean_selector",
+      "version": "2.1.2",
+      "dependencies": [
+        "source_span",
+        "string_scanner"
       ]
     },
     {
@@ -410,11 +512,6 @@
       ]
     },
     {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
-    },
-    {
       "name": "http_parser",
       "version": "4.1.2",
       "dependencies": [
@@ -422,14 +519,6 @@
         "source_span",
         "string_scanner",
         "typed_data"
-      ]
-    },
-    {
-      "name": "async",
-      "version": "2.13.0",
-      "dependencies": [
-        "collection",
-        "meta"
       ]
     },
     {
@@ -491,188 +580,9 @@
       "dependencies": []
     },
     {
-      "name": "syncfusion_flutter_signaturepad",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "syncfusion_flutter_core"
-      ]
-    },
-    {
-      "name": "syncfusion_flutter_pdf",
-      "version": "24.2.9",
-      "dependencies": [
-        "convert",
-        "crypto",
-        "flutter",
-        "intl",
-        "syncfusion_flutter_core",
-        "xml"
-      ]
-    },
-    {
-      "name": "syncfusion_flutter_core",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "vector_math"
-      ]
-    },
-    {
-      "name": "syncfusion_pdfviewer_windows",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
-      "name": "syncfusion_pdfviewer_macos",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "syncfusion_pdfviewer_platform_interface"
-      ]
-    },
-    {
-      "name": "syncfusion_pdfviewer_web",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "flutter_web_plugins",
-        "js",
-        "meta",
-        "syncfusion_pdfviewer_platform_interface"
-      ]
-    },
-    {
-      "name": "syncfusion_pdfviewer_platform_interface",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "intl",
-      "version": "0.19.0",
-      "dependencies": [
-        "clock",
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "device_info_plus",
-      "version": "9.1.2",
-      "dependencies": [
-        "device_info_plus_platform_interface",
-        "ffi",
-        "file",
-        "flutter",
-        "flutter_web_plugins",
-        "meta",
-        "win32",
-        "win32_registry"
-      ]
-    },
-    {
-      "name": "uuid",
-      "version": "4.5.2",
-      "dependencies": [
-        "crypto",
-        "fixnum",
-        "meta"
-      ]
-    },
-    {
-      "name": "cross_file",
-      "version": "0.3.5",
-      "dependencies": [
-        "meta",
-        "web"
-      ]
-    },
-    {
-      "name": "win32",
-      "version": "5.15.0",
-      "dependencies": [
-        "ffi"
-      ]
-    },
-    {
-      "name": "ffi",
-      "version": "2.1.4",
+      "name": "vm_service",
+      "version": "15.0.2",
       "dependencies": []
-    },
-    {
-      "name": "plugin_platform_interface",
-      "version": "2.1.8",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
-      "name": "flutter_plugin_android_lifecycle",
-      "version": "2.0.32",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
-      "name": "leak_tracker_testing",
-      "version": "3.0.2",
-      "dependencies": [
-        "leak_tracker",
-        "matcher",
-        "meta"
-      ]
-    },
-    {
-      "name": "leak_tracker",
-      "version": "11.0.1",
-      "dependencies": [
-        "clock",
-        "collection",
-        "meta",
-        "path",
-        "vm_service"
-      ]
-    },
-    {
-      "name": "term_glyph",
-      "version": "1.2.2",
-      "dependencies": []
-    },
-    {
-      "name": "string_scanner",
-      "version": "1.4.1",
-      "dependencies": [
-        "source_span"
-      ]
-    },
-    {
-      "name": "source_span",
-      "version": "1.10.1",
-      "dependencies": [
-        "collection",
-        "path",
-        "term_glyph"
-      ]
-    },
-    {
-      "name": "boolean_selector",
-      "version": "2.1.2",
-      "dependencies": [
-        "source_span",
-        "string_scanner"
-      ]
     },
     {
       "name": "path_provider_windows",
@@ -819,11 +729,85 @@
       "dependencies": []
     },
     {
-      "name": "convert",
-      "version": "3.1.2",
+      "name": "xdg_directories",
+      "version": "1.1.0",
       "dependencies": [
-        "typed_data"
+        "meta",
+        "path"
       ]
+    },
+    {
+      "name": "petitparser",
+      "version": "7.0.1",
+      "dependencies": [
+        "collection",
+        "meta"
+      ]
+    },
+    {
+      "name": "audioplayers",
+      "version": "5.2.1",
+      "dependencies": [
+        "audioplayers_android",
+        "audioplayers_darwin",
+        "audioplayers_linux",
+        "audioplayers_platform_interface",
+        "audioplayers_web",
+        "audioplayers_windows",
+        "file",
+        "flutter",
+        "http",
+        "meta",
+        "path_provider",
+        "synchronized",
+        "uuid"
+      ]
+    },
+    {
+      "name": "uuid",
+      "version": "4.5.2",
+      "dependencies": [
+        "crypto",
+        "fixnum",
+        "meta"
+      ]
+    },
+    {
+      "name": "audioplayers_windows",
+      "version": "3.1.0",
+      "dependencies": [
+        "audioplayers_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "audioplayers_linux",
+      "version": "3.1.0",
+      "dependencies": [
+        "audioplayers_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "audioplayers_darwin",
+      "version": "5.0.2",
+      "dependencies": [
+        "audioplayers_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "audioplayers_android",
+      "version": "4.0.3",
+      "dependencies": [
+        "audioplayers_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "fixnum",
+      "version": "1.1.1",
+      "dependencies": []
     },
     {
       "name": "crypto",
@@ -834,8 +818,143 @@
     },
     {
       "name": "js",
-      "version": "0.7.2",
-      "dependencies": []
+      "version": "0.6.7",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "path_provider",
+      "version": "2.1.5",
+      "dependencies": [
+        "flutter",
+        "path_provider_android",
+        "path_provider_foundation",
+        "path_provider_linux",
+        "path_provider_platform_interface",
+        "path_provider_windows"
+      ]
+    },
+    {
+      "name": "path_provider_foundation",
+      "version": "2.4.3",
+      "dependencies": [
+        "flutter",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "syncfusion_flutter_pdfviewer",
+      "version": "24.2.8",
+      "dependencies": [
+        "async",
+        "device_info_plus",
+        "flutter",
+        "http",
+        "intl",
+        "syncfusion_flutter_core",
+        "syncfusion_flutter_pdf",
+        "syncfusion_flutter_signaturepad",
+        "syncfusion_pdfviewer_macos",
+        "syncfusion_pdfviewer_platform_interface",
+        "syncfusion_pdfviewer_web",
+        "syncfusion_pdfviewer_windows",
+        "url_launcher",
+        "uuid",
+        "vector_math"
+      ]
+    },
+    {
+      "name": "syncfusion_pdfviewer_windows",
+      "version": "24.2.9",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "syncfusion_pdfviewer_web",
+      "version": "24.2.8",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "js",
+        "meta",
+        "syncfusion_pdfviewer_platform_interface"
+      ]
+    },
+    {
+      "name": "syncfusion_pdfviewer_platform_interface",
+      "version": "24.2.9",
+      "dependencies": [
+        "flutter",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "syncfusion_pdfviewer_macos",
+      "version": "24.2.9",
+      "dependencies": [
+        "flutter",
+        "syncfusion_pdfviewer_platform_interface"
+      ]
+    },
+    {
+      "name": "syncfusion_flutter_signaturepad",
+      "version": "24.2.9",
+      "dependencies": [
+        "flutter",
+        "syncfusion_flutter_core"
+      ]
+    },
+    {
+      "name": "syncfusion_flutter_pdf",
+      "version": "24.2.9",
+      "dependencies": [
+        "convert",
+        "crypto",
+        "flutter",
+        "intl",
+        "syncfusion_flutter_core",
+        "xml"
+      ]
+    },
+    {
+      "name": "syncfusion_flutter_core",
+      "version": "24.2.9",
+      "dependencies": [
+        "flutter",
+        "vector_math"
+      ]
+    },
+    {
+      "name": "intl",
+      "version": "0.19.0",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "device_info_plus",
+      "version": "9.1.2",
+      "dependencies": [
+        "device_info_plus_platform_interface",
+        "ffi",
+        "file",
+        "flutter",
+        "flutter_web_plugins",
+        "meta",
+        "win32",
+        "win32_registry"
+      ]
+    },
+    {
+      "name": "convert",
+      "version": "3.1.2",
+      "dependencies": [
+        "typed_data"
+      ]
     },
     {
       "name": "win32_registry",
@@ -855,29 +974,11 @@
       ]
     },
     {
-      "name": "fixnum",
-      "version": "1.1.1",
-      "dependencies": []
-    },
-    {
-      "name": "vm_service",
-      "version": "15.0.2",
-      "dependencies": []
-    },
-    {
-      "name": "xdg_directories",
-      "version": "1.1.0",
+      "name": "path_provider_android",
+      "version": "2.2.20",
       "dependencies": [
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "petitparser",
-      "version": "7.0.1",
-      "dependencies": [
-        "collection",
-        "meta"
+        "flutter",
+        "path_provider_platform_interface"
       ]
     }
   ],
