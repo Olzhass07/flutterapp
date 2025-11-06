@@ -3,6 +3,7 @@ import 'ProfileScreen.dart';
 import 'LearnScreen.dart';
 import 'VocabScreen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:olzhasmobileproject/GrammarGuide/GrammarGuide.dart';
 
 class HomeScreen extends StatefulWidget {
   final String token;
@@ -165,42 +166,60 @@ class _HomeScreenState extends State<HomeScreen>
 
           // Quick actions
           Text(
-            'Быстрые действия',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: color.onSurface.withOpacity(0.9),
-            ),
+  'Быстрые действия',
+  style: theme.textTheme.titleMedium?.copyWith(
+    fontWeight: FontWeight.w700,
+    color: color.onSurface.withOpacity(0.9),
+  ),
+),
+const SizedBox(height: 12),
+
+GridView.count(
+  crossAxisCount: 2,
+  crossAxisSpacing: 12,
+  mainAxisSpacing: 12,
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  childAspectRatio: 1.6,
+  children: [
+    _quickAction(
+      icon: Icons.school_rounded,
+      title: 'Продолжить',
+      subtitle: 'Последний урок',
+      color: Colors.indigo,
+      onTap: () => setState(() => _selectedIndex = 1),
+    ),
+    _quickAction(
+      icon: Icons.book_rounded,
+      title: 'Повторить',
+      subtitle: 'Слова дня',
+      color: Colors.teal,
+      onTap: () => _onItemTapped(2),
+    ),
+    _quickAction(
+      icon: Icons.timeline_rounded,
+      title: 'Прогресс',
+      subtitle: 'Мои достижения',
+      color: Colors.orange,
+      onTap: () => setState(() => _selectedIndex = 3),
+    ),
+    _quickAction(
+      icon: Icons.menu_book_rounded,
+      title: 'Грамматика',
+      subtitle: 'Грамматический справочник',
+      color: Colors.purple,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => GrammarGuideScreen(token: widget.token),
           ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 120,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _quickAction(
-                  icon: Icons.school_rounded,
-                  title: 'Продолжить',
-                  subtitle: 'Последний урок',
-                  color: Colors.indigo,
-                  onTap: () => setState(() => _selectedIndex = 1),
-                ),
-                _quickAction(
-                  icon: Icons.book_rounded,
-                  title: 'Повторить',
-                  subtitle: 'Слова дня',
-                  color: Colors.teal,
-                  onTap: () => _onItemTapped(2),
-                ),
-                _quickAction(
-                  icon: Icons.timeline_rounded,
-                  title: 'Прогресс',
-                  subtitle: 'Мои достижения',
-                  color: Colors.orange,
-                  onTap: () => setState(() => _selectedIndex = 3),
-                ),
-              ],
-            ),
-          ),
+        );
+      },
+    ),
+  ],
+),
+
         ],
       ),
     );
@@ -289,7 +308,13 @@ class _HomeScreenState extends State<HomeScreen>
         surfaceTintColor: Colors.white,
         elevation: 0,
         title: Text(
-          titles[_selectedIndex],
+          _selectedIndex == 0
+              ? 'Home'
+              : _selectedIndex == 1
+                  ? 'Learn'
+                  : _selectedIndex == 2
+                      ? 'Vocab'
+                      : 'Profile',
           style: const TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.w700,
@@ -336,4 +361,3 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-

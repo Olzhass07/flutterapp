@@ -1,0 +1,7 @@
+2025/11/06-22:40:53.554 db60 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.72f48f3d\flutter_tools_chrome_device.4169ed9a\Default\IndexedDB\https_learnenglish.britishcouncil.org_0.indexeddb.leveldb/MANIFEST-000001
+2025/11/06-22:40:53.554 db60 Recovering log #3
+2025/11/06-22:40:53.554 db60 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.72f48f3d\flutter_tools_chrome_device.4169ed9a\Default\IndexedDB\https_learnenglish.britishcouncil.org_0.indexeddb.leveldb/000003.log 
+2025/11/06-22:42:01.830 113e8 Level-0 table #5: started
+2025/11/06-22:42:01.832 113e8 Level-0 table #5: 886 bytes OK
+2025/11/06-22:42:01.833 113e8 Delete type=0 #3
+2025/11/06-22:42:01.834 113e8 Manual compaction at level-0 from (begin) .. (end); will stop at (end)
