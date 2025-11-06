@@ -9,6 +9,7 @@ import 'VocabScreen.dart';
 import 'LearnScreen1.dart';
 import 'CategorySelectRead.dart';
 import 'ForgotPassword.dart';
+import 'GrammarGuide.dart';
 
 
 void main() {
@@ -65,6 +66,13 @@ class MyApp extends StatelessWidget {
           final String token = settings.arguments as String;
           return MaterialPageRoute(
             builder: (context) => LearnScreen1(token: token),
+          );
+        }
+
+        if (settings.name == '/grammar') {
+          final String token = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => GrammarGuideScreen(token: token),
           );
         }
 
