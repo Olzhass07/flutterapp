@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'bottom_navbar.dart';
+import 'db/vocab_db.dart';
+import 'VocabScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String token;
@@ -17,11 +19,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? userData;
   bool isLoading = true;
   bool isSaving = false;
+  List<Map<String, dynamic>> _vocab = [];
+  bool _vocabLoading = true;
 
   @override
   void initState() {
     super.initState();
     fetchProfile();
+    _loadVocab();
   }
 
   Future<void> fetchProfile() async {
@@ -41,12 +46,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
           userData = data['user'] as Map<String, dynamic>?;
           isLoading = false;
         });
+        // refresh vocab in case user id derivation depends on token
+        _loadVocab();
       } else {
         setState(() => isLoading = false);
       }
     } catch (_) {
       setState(() => isLoading = false);
     }
+  }
+
+  Future<void> _loadVocab() async {
+    try {
+      final key = _deriveUserKey(widget.token);
+      final items = await VocabDb.instance.fetchEntries(key);
+      if (!mounted) return;
+      setState(() {
+        _vocab = items;
+        _vocabLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _vocab = [];
+        _vocabLoading = false;
+      });
+    }
+  }
+
+  String _deriveUserKey(String? token) {
+    if (token == null || token.isEmpty) return 'guest';
+    try {
+      final parts = token.split('.');
+      if (parts.length == 3) {
+        String norm(String s) {
+          final pad = (4 - s.length % 4) % 4;
+          return s.replaceAll('-', '+').replaceAll('_', '/') + '=' * pad;
+        }
+        final payloadB64 = norm(parts[1]);
+        final payload = jsonDecode(utf8.decode(base64.decode(payloadB64))) as Map<String, dynamic>;
+        final candidates = [
+          payload['sub'], payload['user_id'], payload['userId'], payload['id'], payload['uid'], payload['email'], payload['username'],
+        ];
+        for (final c in candidates) {
+          if (c is String && c.isNotEmpty) return c;
+          if (c is num) return c.toString();
+        }
+      }
+    } catch (_) {}
+    return token.length > 24 ? token.substring(0, 24) : token;
   }
 
   @override
@@ -159,6 +207,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
 
                           const SizedBox(height: 16),
+
+                          // Vocabulary snapshot
+                          Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.book_rounded, color: Color(0xFF4F46E5)),
+                                      const SizedBox(width: 8),
+                                      const Text('Vocabulary', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                                      const Spacer(),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => VocabScreen(token: widget.token),
+                                            ),
+                                          ).then((_) => _loadVocab());
+                                        },
+                                        child: const Text('Open'),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  if (_vocabLoading)
+                                    const Center(child: CircularProgressIndicator())
+                                  else
+                                    Text(
+                                      'Words saved: ${_vocab.length}',
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
 
                           Card(
                             elevation: 3,
