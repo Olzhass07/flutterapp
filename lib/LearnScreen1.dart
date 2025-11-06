@@ -4,6 +4,7 @@ import 'CategorySelectRead.dart';
 import 'CategorySelectVideo.dart';
 import 'home.dart';
 import 'bottom_navbar.dart'; 
+import 'GrammarGuide.dart';
 
 class LearnScreen1 extends StatelessWidget {
   final String token;
@@ -83,6 +84,13 @@ class LearnScreen1 extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CategorySelectVideo(),
+                    ),
+                  );
+                } else if (section['title'] == 'Grammar Guide') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GrammarGuideScreen(token: token),
                     ),
                   );
                 } else {
