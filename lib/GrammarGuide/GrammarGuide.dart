@@ -54,7 +54,7 @@ class _GrammarGuideScreenState extends State<GrammarGuideScreen> {
             userLevel = lvl;
             final idx = _levelIndexOf(lvl);
             if (idx != null) {
-              rec = (idx + 1 < levels.length) ? idx + 1 : idx; // user or +1
+              rec = idx; // exactly user's level
             }
           }
         }
@@ -200,4 +200,3 @@ class _GrammarGuideScreenState extends State<GrammarGuideScreen> {
     );
   }
 }
-
