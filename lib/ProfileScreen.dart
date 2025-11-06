@@ -221,7 +221,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     children: [
                                       const Icon(Icons.book_rounded, color: Color(0xFF4F46E5)),
                                       const SizedBox(width: 8),
-                                      const Text('Vocabulary', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                                      const Text('Словарь', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                                       const Spacer(),
                                       TextButton(
                                         onPressed: () {
@@ -232,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             ),
                                           ).then((_) => _loadVocab());
                                         },
-                                        child: const Text('Open'),
+                                        child: const Text('Открыть'),
                                       ),
                                     ],
                                   ),
@@ -241,7 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     const Center(child: CircularProgressIndicator())
                                   else
                                     Text(
-                                      'Words saved: ${_vocab.length}',
+                                      'Слов сохранено: ${_vocab.length}',
                                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                                     ),
                                 ],
