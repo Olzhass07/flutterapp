@@ -1,6 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'Levels/beginner.dart';
+import 'Levels/elementary.dart';
+import 'Levels/pre-int.dart';
+import 'Levels/intermediate.dart';
+import 'Levels/upper-int.dart';
+import 'Levels/advanced.dart';
 
 class GrammarGuideScreen extends StatefulWidget {
   final String? token;
@@ -90,6 +96,21 @@ class _GrammarGuideScreenState extends State<GrammarGuideScreen>
     return null;
   }
 
+  Widget _screenFor(String title) {
+    final t = title.toLowerCase();
+    if (t == 'beginner') return const BeginnerLevelScreen();
+    if (t == 'elementary') return const ElementaryLevelScreen();
+    if (t == 'pre-intermediate' || t == 'pre intermediate' || t == 'pre-int') {
+      return const PreIntermediateLevelScreen();
+    }
+    if (t == 'intermediate' || t == 'int') return const IntermediateLevelScreen();
+    if (t == 'upper-intermediate' || t == 'upper intermediate' || t == 'upper-int' || t == 'upper int') {
+      return const UpperIntermediateLevelScreen();
+    }
+    if (t == 'advanced') return const AdvancedLevelScreen();
+    return const BeginnerLevelScreen();
+  }
+
   @override
   Widget build(BuildContext context) {
     final gradient = const LinearGradient(
@@ -155,91 +176,99 @@ class _GrammarGuideScreenState extends State<GrammarGuideScreen>
 
                   // Список уровней
                   Expanded(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      itemCount: levels.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 14),
-                      itemBuilder: (context, index) {
-                        final title = levels[index];
-                        final isRecommended = index == recommendedIndex;
+  child: ListView.separated(
+    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+    itemCount: levels.length,
+    separatorBuilder: (_, __) => const SizedBox(height: 14),
+    itemBuilder: (context, index) {
+      final title = levels[index];
+      final isRecommended = index == recommendedIndex;
 
-                        return AnimatedScale(
-                          duration: const Duration(milliseconds: 250),
-                          scale: isRecommended ? 1.03 : 1.0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: isRecommended
-                                            ? [Color(0xFF61A1FA), Color(0xFF3B82F6)]
-                                            : [Color(0xFFE3E9F6), Color(0xFFDDE3F0)],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: const Icon(Icons.menu_book_rounded,
-                                        color: Colors.white),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          title,
-                                          style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w700,
-                                            color: isRecommended
-                                                ? Colors.blueAccent
-                                                : Colors.black87,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          isRecommended
-                                              ? 'Recommended for you'
-                                              : 'Explore grammar lessons',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: isRecommended
-                                                ? Colors.green
-                                                : Colors.black54,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+      return AnimatedScale(
+        duration: const Duration(milliseconds: 250),
+        scale: isRecommended ? 1.03 : 1.0,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => _screenFor(title)),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: isRecommended
+                            ? [Color(0xFF61A1FA), Color(0xFF3B82F6)]
+                            : [Color(0xFFE3E9F6), Color(0xFFDDE3F0)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(Icons.menu_book_rounded, color: Colors.white),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: isRecommended
+                                ? Colors.blueAccent
+                                : Colors.black87,
                           ),
-                        );
-                      },
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          isRecommended
+                              ? 'Recommended for you'
+                              : 'Explore grammar lessons',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isRecommended
+                                ? Colors.green
+                                : Colors.black54,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+), 
+
                 ],
               ),
             ),
