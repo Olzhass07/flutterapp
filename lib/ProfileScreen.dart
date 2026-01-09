@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'bottom_navbar.dart';
 import 'db/vocab_db.dart';
 import 'VocabScreen.dart';
+import 'utils/user_key.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String token;
@@ -58,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadVocab() async {
     try {
-      final key = _deriveUserKey(widget.token);
+      final key = deriveUserKeyFromToken(widget.token);
       final items = await VocabDb.instance.fetchEntries(key);
       if (!mounted) return;
       setState(() {
@@ -72,29 +73,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _vocabLoading = false;
       });
     }
-  }
-
-  String _deriveUserKey(String? token) {
-    if (token == null || token.isEmpty) return 'guest';
-    try {
-      final parts = token.split('.');
-      if (parts.length == 3) {
-        String norm(String s) {
-          final pad = (4 - s.length % 4) % 4;
-          return s.replaceAll('-', '+').replaceAll('_', '/') + '=' * pad;
-        }
-        final payloadB64 = norm(parts[1]);
-        final payload = jsonDecode(utf8.decode(base64.decode(payloadB64))) as Map<String, dynamic>;
-        final candidates = [
-          payload['sub'], payload['user_id'], payload['userId'], payload['id'], payload['uid'], payload['email'], payload['username'],
-        ];
-        for (final c in candidates) {
-          if (c is String && c.isNotEmpty) return c;
-          if (c is num) return c.toString();
-        }
-      }
-    } catch (_) {}
-    return token.length > 24 ? token.substring(0, 24) : token;
   }
 
   @override
