@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home.dart';
+import 'utils/validation.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -26,64 +27,35 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? confirmPasswordError;
   bool isSubmitting = false;
 
-  final RegExp _emailRegExp = RegExp(
-    r"^[a-zA-Z0-9.a-zA-Z0-9!#%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-  );
-
   bool _validate() {
-  bool ok = true;
-  setState(() {
-    nameError = null;
-    emailError = null;
-    passwordError = null;
-    confirmPasswordError = null;
-  });
+    bool ok = true;
+    setState(() {
+      nameError = null;
+      emailError = null;
+      passwordError = null;
+      confirmPasswordError = null;
+    });
 
-  final name = nameController.text.trim();
-  final email = emailController.text.trim();
-  final password = passwordController.text;
-  final confirm = confirmPasswordController.text;
+    final name = nameController.text;
+    final email = emailController.text;
+    final password = passwordController.text;
+    final confirm = confirmPasswordController.text;
 
-  if (name.isEmpty) {
-    nameError = 'Please enter your name';
-    ok = false;
-  } else if (name.length < 2) {
-    nameError = 'Name is too short';
-    ok = false;
+    nameError = validateName(name);
+    if (nameError != null) ok = false;
+
+    emailError = validateEmail(email);
+    if (emailError != null) ok = false;
+
+    passwordError = validatePassword(password);
+    if (passwordError != null) ok = false;
+
+    confirmPasswordError = validateConfirmPassword(password, confirm);
+    if (confirmPasswordError != null) ok = false;
+
+    setState(() {});
+    return ok;
   }
-
-  if (email.isEmpty) {
-    emailError = 'Please enter your email';
-    ok = false;
-  } else if (!_emailRegExp.hasMatch(email)) {
-    emailError = 'Enter a valid email';
-    ok = false;
-  }
-
-  
-  final passwordRegex =
-      RegExp(r'^(?=.*[A-Z])(?=.*[!@#\$&*~^%]).{8,}$'); 
-
-  if (password.isEmpty) {
-    passwordError = 'Please enter a password';
-    ok = false;
-  } else if (!passwordRegex.hasMatch(password)) {
-    passwordError =
-        'Password must be at least 8 chars, include 1 uppercase & 1 special symbol';
-    ok = false;
-  }
-
-  if (confirm.isEmpty) {
-    confirmPasswordError = 'Please confirm password';
-    ok = false;
-  } else if (password != confirm) {
-    confirmPasswordError = 'Passwords do not match';
-    ok = false;
-  }
-
-  setState(() {});
-  return ok;
-}
 
 
   Future<void> registerUser() async {

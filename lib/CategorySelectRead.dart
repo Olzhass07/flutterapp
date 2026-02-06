@@ -2,6 +2,7 @@
 import 'readCategories/BooksReadScreen.dart';
 import 'readCategories/ArticlesReadScreen.dart';
 import 'readCategories/NewsReadScreen.dart';
+import 'utils/categories.dart';
 
 
 
@@ -72,21 +73,21 @@ class CategorySelectReadScreen extends StatelessWidget {
     required String title,
     required String count,
   }) {
-    final colors = _gradientFor(title);
-    final icon = _iconFor(title);
+    final colors = readCategoryGradient(title);
+    final icon = readCategoryIcon(title);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {
-          final lower = title.toLowerCase();
+          final key = readCategoryKey(title);
           Widget screen;
-          if (lower == 'books') {
+          if (key == 'books') {
             screen = BooksReadScreen(token: token);
-          } else if (lower == 'articles') {
+          } else if (key == 'articles') {
             screen = ArticlesReadScreen(token: token);
-          } else if (lower == 'news') {
+          } else if (key == 'news') {
             screen = NewsReadScreen(token: token);
           } else {
             screen = BooksReadScreen(token: token);
@@ -186,31 +187,5 @@ class CategorySelectReadScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _iconFor(String title) {
-    switch (title.toLowerCase()) {
-      case 'books':
-        return Icons.menu_book_rounded;
-      case 'articles':
-        return Icons.article_rounded;
-      case 'news':
-        return Icons.newspaper_rounded;
-      default:
-        return Icons.folder_rounded;
-    }
-  }
-
-  List<Color> _gradientFor(String title) {
-    switch (title.toLowerCase()) {
-      case 'books':
-        return const [Color(0xFF4F46E5), Color(0xFF60A5FA)];
-      case 'articles':
-        return const [Color(0xFF2563EB), Color(0xFF34D399)];
-      case 'news':
-        return const [Color(0xFFDB2777), Color(0xFFF59E0B)];
-      default:
-        return const [Color(0xFF64748B), Color(0xFF94A3B8)];
-    }
   }
 }

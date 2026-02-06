@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../utils/grammar_levels.dart';
 import 'Levels/beginner.dart';
 import 'Levels/elementary.dart';
 import 'Levels/pre-int.dart';
@@ -18,14 +19,7 @@ class GrammarGuideScreen extends StatefulWidget {
 
 class _GrammarGuideScreenState extends State<GrammarGuideScreen>
     with SingleTickerProviderStateMixin {
-  static const List<String> levels = [
-    'Beginner',
-    'Elementary',
-    'Pre-Intermediate',
-    'Intermediate',
-    'Upper-Intermediate',
-    'Advanced',
-  ];
+  static const List<String> levels = grammarLevels;
 
   String? userLevel;
   int recommendedIndex = 0;
@@ -67,7 +61,7 @@ class _GrammarGuideScreenState extends State<GrammarGuideScreen>
           final lvl = (user?['level'] as String?)?.trim();
           if (lvl != null && lvl.isNotEmpty) {
             userLevel = lvl;
-            final idx = _levelIndexOf(lvl);
+            final idx = grammarLevelIndexOf(lvl);
             if (idx != null) rec = idx;
           }
         }
@@ -81,33 +75,18 @@ class _GrammarGuideScreenState extends State<GrammarGuideScreen>
     _animCtrl.forward();
   }
 
-  int? _levelIndexOf(String value) {
-    final v = value.toLowerCase().replaceAll('-', ' ').replaceAll('_', ' ').trim();
-    for (int i = 0; i < levels.length; i++) {
-      final n = levels[i].toLowerCase().replaceAll('-', ' ');
-      if (n == v ||
-          (n.contains('upper intermediate') && (v == 'upper int' || v == 'upper intermediate')) ||
-          (n.contains('pre intermediate') && (v == 'pre intermediate')) ||
-          (n.contains('pre intermediate') && (v == 'pre-int')) ||
-          (n.contains('upper intermediate') && (v == 'upper-int'))) {
-        return i;
-      }
-    }
-    return null;
-  }
-
   Widget _screenFor(String title) {
-    final t = title.toLowerCase();
-    if (t == 'beginner') return const BeginnerLevelScreen();
-    if (t == 'elementary') return const ElementaryLevelScreen();
-    if (t == 'pre-intermediate' || t == 'pre intermediate' || t == 'pre-int') {
+    final key = normalizeGrammarLevelKey(title);
+    if (key == 'beginner') return const BeginnerLevelScreen();
+    if (key == 'elementary') return const ElementaryLevelScreen();
+    if (key == 'pre-intermediate') {
       return const PreIntermediateLevelScreen();
     }
-    if (t == 'intermediate' || t == 'int') return const IntermediateLevelScreen();
-    if (t == 'upper-intermediate' || t == 'upper intermediate' || t == 'upper-int' || t == 'upper int') {
+    if (key == 'intermediate') return const IntermediateLevelScreen();
+    if (key == 'upper-intermediate') {
       return const UpperIntermediateLevelScreen();
     }
-    if (t == 'advanced') return const AdvancedLevelScreen();
+    if (key == 'advanced') return const AdvancedLevelScreen();
     return const BeginnerLevelScreen();
   }
 

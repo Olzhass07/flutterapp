@@ -24,4 +24,35 @@ void main() {
     final token = 'x' * 30;
     expect(deriveUserKeyFromToken(token), 'x' * 24);
   });
+
+  test('deriveUserKeyFromToken reads numeric user_id', () {
+    final header = _b64Url({'alg': 'none', 'typ': 'JWT'});
+    final payload = _b64Url({'user_id': 42});
+    final token = '$header.$payload.signature';
+    expect(deriveUserKeyFromToken(token), '42');
+  });
+
+  test('deriveUserKeyFromToken uses userId when sub is missing', () {
+    final header = _b64Url({'alg': 'none', 'typ': 'JWT'});
+    final payload = _b64Url({'userId': 'user-999'});
+    final token = '$header.$payload.signature';
+    expect(deriveUserKeyFromToken(token), 'user-999');
+  });
+
+  test('deriveUserKeyFromToken uses email when sub is empty', () {
+    final header = _b64Url({'alg': 'none', 'typ': 'JWT'});
+    final payload = _b64Url({'sub': '', 'email': 'a@b.com'});
+    final token = '$header.$payload.signature';
+    expect(deriveUserKeyFromToken(token), 'a@b.com');
+  });
+
+  test('deriveUserKeyFromToken falls back when token is not JWT', () {
+    final token = 'one.two';
+    expect(deriveUserKeyFromToken(token), 'one.two');
+  });
+
+  test('deriveUserKeyFromToken falls back on invalid payload', () {
+    final token = 'a.!@#.c';
+    expect(deriveUserKeyFromToken(token), 'a.!@#.c');
+  });
 }

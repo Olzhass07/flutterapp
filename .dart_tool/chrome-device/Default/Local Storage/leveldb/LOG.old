@@ -1,9 +1,11 @@
-2025/11/07-01:32:53.381 11efc Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.b6c73b5c\flutter_tools_chrome_device.55d938b1\Default\Local Storage\leveldb/MANIFEST-000001
-2025/11/07-01:32:53.385 11efc Recovering log #15
-2025/11/07-01:32:53.386 11efc Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.b6c73b5c\flutter_tools_chrome_device.55d938b1\Default\Local Storage\leveldb/000015.log 
-2025/11/07-01:32:53.387 11efc Delete type=0 #3
-2025/11/07-01:32:53.387 11efc Delete type=2 #7
-2025/11/07-01:32:53.388 11efc Delete type=2 #9
-2025/11/07-01:32:53.388 11efc Delete type=2 #11
-2025/11/07-01:32:53.388 11efc Delete type=0 #12
-2025/11/07-01:32:53.388 11efc Delete type=2 #13
+2026/02/04-14:34:02.109 6088 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.90f2ae6b\flutter_tools_chrome_device.3787fe41\Default\Local Storage\leveldb/MANIFEST-000001
+2026/02/04-14:34:02.115 6088 Recovering log #19
+2026/02/04-14:34:02.117 6088 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.90f2ae6b\flutter_tools_chrome_device.3787fe41\Default\Local Storage\leveldb/000019.log 
+2026/02/04-14:34:02.118 6088 Delete type=0 #3
+2026/02/04-14:34:02.119 6088 Delete type=2 #7
+2026/02/04-14:34:02.119 6088 Delete type=2 #9
+2026/02/04-14:34:02.119 6088 Delete type=2 #11
+2026/02/04-14:34:02.119 6088 Delete type=0 #12
+2026/02/04-14:34:02.119 6088 Delete type=2 #13
+2026/02/04-14:34:02.119 6088 Delete type=0 #15
+2026/02/04-14:34:02.119 6088 Delete type=2 #20

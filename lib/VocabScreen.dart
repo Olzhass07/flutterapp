@@ -4,6 +4,7 @@ import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
 import 'db/vocab_db.dart';
 import 'bottom_navbar.dart';
+import 'utils/dictionary_parser.dart';
 
 class VocabScreen extends StatefulWidget {
   final String? token;
@@ -338,51 +339,8 @@ class _WordDetailsSheetState extends State<_WordDetailsSheet> {
     if (resp.statusCode != 200) return {};
 
     final data = jsonDecode(resp.body);
-    if (data is! List || data.isEmpty) return {};
 
-    String? example;
-    final Set<String> syns = {};
-
-    try {
-      final first = data[0] as Map<String, dynamic>;
-      final defBlocks = first['def'] as List?;
-      if (defBlocks != null && defBlocks.isNotEmpty) {
-        final sseq = defBlocks[0]['sseq'];
-        if (sseq is List && sseq.isNotEmpty) {
-          for (final sub in sseq) {
-            final entry = sub[0];
-            if (entry is List && entry.isNotEmpty) {
-              final dt = entry[1]?['dt'];
-              if (dt is List) {
-                for (final item in dt) {
-                  if (item is List && item.length > 1 && item[0] == 'vis') {
-                    final visList = item[1];
-                    if (visList is List && visList.isNotEmpty) {
-                      final vis = visList[0];
-                      if (vis is Map && vis['t'] is String) {
-                        example = vis['t'].replaceAll(RegExp(r'\{.*?\}'), '');
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (first['meta'] is Map && first['meta']['syns'] is List) {
-        for (final list in first['meta']['syns']) {
-          if (list is List) syns.addAll(list.map((e) => e.toString()));
-        }
-      }
-    } catch (_) {}
-
-    return {
-      'example': example,
-      'synonyms': syns.toList(),
-    };
+    return parseDictionaryDetails(data);
   }
 
   @override

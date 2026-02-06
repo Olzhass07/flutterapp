@@ -3,6 +3,7 @@ import 'videoCategories/tutorials.dart';
 import 'videoCategories/documentaries.dart';
 import 'videoCategories/movies.dart';
 import 'videoCategories/podcasts.dart';
+import 'utils/categories.dart';
 
 class CategorySelectVideo extends StatelessWidget {
   const CategorySelectVideo({super.key});
@@ -68,31 +69,31 @@ class CategorySelectVideo extends StatelessWidget {
     required String title,
     required String count,
   }) {
-    final colors = _gradientFor(title);
-    final icon = _iconFor(title);
+    final colors = videoCategoryGradient(title);
+    final icon = videoCategoryIcon(title);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {
-          final lower = title.toLowerCase();
-          if (lower == 'tutorials') {
+          final key = videoCategoryKey(title);
+          if (key == 'tutorials') {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const TutorialsScreen()),
             );
-          } else if (lower == 'documentaries') {
+          } else if (key == 'documentaries') {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const DocumentariesScreen()),
             );
-          } else if (lower == 'movies') {
+          } else if (key == 'movies') {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const MoviesScreen()),
             );
-          } else if (lower == 'podcasts') {
+          } else if (key == 'podcasts') {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const PodcastsScreen()),
@@ -193,35 +194,5 @@ class CategorySelectVideo extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _iconFor(String title) {
-    switch (title.toLowerCase()) {
-      case 'tutorials':
-        return Icons.school_rounded;
-      case 'documentaries':
-        return Icons.movie_filter_rounded;
-      case 'movies':
-        return Icons.local_movies_rounded;
-      case 'podcasts':
-        return Icons.podcasts_rounded;
-      default:
-        return Icons.folder_rounded;
-    }
-  }
-
-  List<Color> _gradientFor(String title) {
-    switch (title.toLowerCase()) {
-      case 'tutorials':
-        return const [Color(0xFF4F46E5), Color(0xFF60A5FA)];
-      case 'documentaries':
-        return const [Color(0xFF2563EB), Color(0xFF34D399)];
-      case 'movies':
-        return const [Color(0xFFDB2777), Color(0xFFF59E0B)];
-      case 'podcasts':
-        return const [Color(0xFF9333EA), Color(0xFF6366F1)];
-      default:
-        return const [Color(0xFF64748B), Color(0xFF94A3B8)];
-    }
   }
 }
