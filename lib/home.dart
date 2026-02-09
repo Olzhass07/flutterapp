@@ -4,6 +4,7 @@ import 'LearnScreen.dart';
 import 'VocabScreen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:olzhasmobileproject/GrammarGuide/GrammarGuide.dart';
+import 'flashcards_block.dart';
 
 class HomeScreen extends StatefulWidget {
   final String token;
@@ -219,6 +220,9 @@ GridView.count(
     ),
   ],
 ),
+
+          const SizedBox(height: 20),
+          FlashcardsBlock(token: widget.token),
 
         ],
       ),
