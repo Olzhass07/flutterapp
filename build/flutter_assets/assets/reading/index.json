@@ -1,0 +1,32 @@
+[
+  {
+    "id": "article_demo_1",
+    "title": "Sample Article",
+    "category": "articles",
+    "level": "intermediate",
+    "author": "Add your source",
+    "minutes": 3,
+    "summary": "Replace this file with your own article text. Words in the reader can be tapped and saved to vocabulary.",
+    "assetPath": "assets/reading/articles/sample_article.txt"
+  },
+  {
+    "id": "book_demo_1",
+    "title": "Sample Book Chapter",
+    "category": "books",
+    "level": "beginner",
+    "author": "Add your source",
+    "minutes": 4,
+    "summary": "Use this as a template for book chapters or story excerpts.",
+    "assetPath": "assets/reading/books/sample_book.txt"
+  },
+  {
+    "id": "news_demo_1",
+    "title": "Sample News Item",
+    "category": "news",
+    "level": "upper-intermediate",
+    "author": "Add your source",
+    "minutes": 2,
+    "summary": "Short news-style text for testing the reading section.",
+    "assetPath": "assets/reading/news/sample_news.txt"
+  }
+]

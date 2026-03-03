@@ -1,0 +1,5 @@
+This is a sample chapter for the reading section.
+
+You can store longer story fragments in separate text files and describe them in the reading index. The app will load the text from assets and let the user interact with individual words.
+
+Replace this content with any book excerpt or adapted story that fits your learning goals.

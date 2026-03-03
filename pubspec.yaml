@@ -72,7 +72,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-  - assets/mascot.png
+    - assets/mascot.png
+    - assets/reading/index.json
+    - assets/reading/articles/
+    - assets/reading/books/
+    - assets/reading/news/
 
   
   
