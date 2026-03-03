@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'db/vocab_db.dart';
@@ -232,11 +233,14 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
   final List<String> _forcedQueue = [];
   late final List<Map<String, dynamic>> _entries;
   final Map<String, Map<String, dynamic>> _stats = {};
+  Timer? _idleHintTimer;
   int _seenCount = 0;
   int _sessionKnow = 0;
   int _sessionAgain = 0;
   int _currentIndex = 0;
   bool _showTranslation = false;
+  bool _showSwipeHint = false;
+  bool _isSubmitting = false;
   double _dragDx = 0;
 
   @override
@@ -244,6 +248,13 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
     super.initState();
     _entries = _uniqueEntries(widget.items);
     _loadStats();
+    _scheduleIdleHint();
+  }
+
+  @override
+  void dispose() {
+    _idleHintTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadStats() async {
@@ -342,8 +353,13 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                         child: _deckGhost(0.20),
                       ),
                       GestureDetector(
-                        onTap: () => setState(() => _showTranslation = !_showTranslation),
+                        onTap: () {
+                          _registerInteraction();
+                          setState(() => _showTranslation = !_showTranslation);
+                        },
                         onHorizontalDragUpdate: (details) {
+                          _registerInteraction();
+                          if (_isSubmitting) return;
                           setState(() {
                             _dragDx = (_dragDx + details.delta.dx).clamp(-170, 170).toDouble();
                           });
@@ -356,6 +372,36 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                             child: Stack(
                               children: [
                                 _mainCard(word: word, ru: ru, kk: kk),
+                                Positioned.fill(
+                                  child: IgnorePointer(
+                                    child: AnimatedOpacity(
+                                      duration: const Duration(milliseconds: 120),
+                                      opacity: (_dragDx.abs() / 120).clamp(0, 0.22).toDouble(),
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(28),
+                                          gradient: LinearGradient(
+                                            colors: _dragDx >= 0
+                                                ? [
+                                                    const Color(0xFF22C55E),
+                                                    const Color(0x8022C55E),
+                                                  ]
+                                                : [
+                                                    const Color(0xFFEF4444),
+                                                    const Color(0x80EF4444),
+                                                  ],
+                                            begin: _dragDx >= 0
+                                                ? Alignment.centerLeft
+                                                : Alignment.centerRight,
+                                            end: _dragDx >= 0
+                                                ? Alignment.centerRight
+                                                : Alignment.centerLeft,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 Positioned(
                                   top: 18,
                                   left: 18,
@@ -383,6 +429,22 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                           ),
                         ),
                       ),
+                      Positioned(
+                        left: 20,
+                        right: 20,
+                        bottom: 24,
+                        child: IgnorePointer(
+                          child: AnimatedSlide(
+                            duration: const Duration(milliseconds: 260),
+                            offset: _showSwipeHint ? Offset.zero : const Offset(0, 0.25),
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 260),
+                              opacity: _showSwipeHint ? 1 : 0,
+                              child: _swipeHintCard(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -394,7 +456,7 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                         label: 'Again',
                         icon: Icons.close_rounded,
                         color: const Color(0xFFEF4444),
-                        onTap: () => _handleAnswer(knew: false),
+                        onTap: () => _animateAndHandleAnswer(knew: false),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -403,7 +465,7 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                         label: 'Know',
                         icon: Icons.check_rounded,
                         color: const Color(0xFF22C55E),
-                        onTap: () => _handleAnswer(knew: true),
+                        onTap: () => _animateAndHandleAnswer(knew: true),
                       ),
                     ),
                   ],
@@ -482,16 +544,50 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
   }
 
   void _submitByDrag() {
+    _registerInteraction();
+    if (_isSubmitting) return;
     final dx = _dragDx;
     if (dx <= -95) {
-      _handleAnswer(knew: false);
+      _animateAndHandleAnswer(knew: false);
       return;
     }
     if (dx >= 95) {
-      _handleAnswer(knew: true);
+      _animateAndHandleAnswer(knew: true);
       return;
     }
     setState(() => _dragDx = 0);
+  }
+
+  Future<void> _animateAndHandleAnswer({required bool knew}) async {
+    if (_isSubmitting || !mounted) return;
+    _registerInteraction();
+    setState(() {
+      _isSubmitting = true;
+      _dragDx = knew ? 240 : -240;
+    });
+    await Future.delayed(const Duration(milliseconds: 180));
+    if (!mounted) return;
+    await _handleAnswer(knew: knew);
+    if (!mounted) return;
+    setState(() {
+      _isSubmitting = false;
+      _dragDx = 0;
+    });
+  }
+
+  void _registerInteraction() {
+    _scheduleIdleHint();
+    if (_showSwipeHint && mounted) {
+      setState(() => _showSwipeHint = false);
+    }
+  }
+
+  void _scheduleIdleHint() {
+    _idleHintTimer?.cancel();
+    _idleHintTimer = Timer(const Duration(seconds: 4), () {
+      if (!mounted || _isSubmitting) return;
+      setState(() => _showSwipeHint = true);
+    });
   }
 
   int _pickNextIndex({String? excludeWord}) {
@@ -582,15 +678,24 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF3559E0), Color(0xFF6C8BFF)],
+        gradient: LinearGradient(
+          colors: _dragDx > 12
+              ? const [Color(0xFF15803D), Color(0xFF4ADE80)]
+              : _dragDx < -12
+              ? const [Color(0xFFDC2626), Color(0xFFFB7185)]
+              : const [Color(0xFF3559E0), Color(0xFF6C8BFF)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3559E0).withValues(alpha: 0.35),
+            color: (_dragDx > 12
+                    ? const Color(0xFF16A34A)
+                    : _dragDx < -12
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFF3559E0))
+                .withValues(alpha: 0.35),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -666,6 +771,39 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
           fontSize: 12,
           letterSpacing: 0.6,
         ),
+      ),
+    );
+  }
+
+  Widget _swipeHintCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.swipe_rounded, color: Color(0xFF3559E0), size: 20),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Swipe right if you know this word, or left if you do not.',
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
