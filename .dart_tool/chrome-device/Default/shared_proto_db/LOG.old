@@ -1,13 +1,16 @@
-2026/03/03-14:49:49.422 9490 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.f95bbabe\flutter_tools_chrome_device.69389dc6\Default\shared_proto_db/MANIFEST-000001
-2026/03/03-14:49:49.423 9490 Recovering log #19
-2026/03/03-14:49:49.423 9490 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.f95bbabe\flutter_tools_chrome_device.69389dc6\Default\shared_proto_db/000019.log 
-2026/03/03-14:49:49.424 9490 Delete type=0 #3
-2026/03/03-14:49:49.424 9490 Delete type=0 #4
-2026/03/03-14:49:49.424 9490 Delete type=0 #7
-2026/03/03-14:49:49.424 9490 Delete type=2 #8
-2026/03/03-14:49:49.424 9490 Delete type=0 #10
-2026/03/03-14:49:49.424 9490 Delete type=2 #11
-2026/03/03-14:49:49.424 9490 Delete type=0 #13
-2026/03/03-14:49:49.424 9490 Delete type=2 #14
-2026/03/03-14:49:49.425 9490 Delete type=0 #16
-2026/03/03-14:49:49.425 9490 Delete type=2 #17
+2026/03/04-00:46:25.588 60f4 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.4ff79e7a\flutter_tools_chrome_device.ddfad0fd\Default\shared_proto_db/MANIFEST-000001
+2026/03/04-00:46:25.588 60f4 Recovering log #19
+2026/03/04-00:46:25.589 60f4 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.4ff79e7a\flutter_tools_chrome_device.ddfad0fd\Default\shared_proto_db/000019.log 
+2026/03/04-00:46:25.589 60f4 Delete type=0 #3
+2026/03/04-00:46:25.590 60f4 Delete type=0 #4
+2026/03/04-00:46:25.590 60f4 Delete type=0 #7
+2026/03/04-00:46:25.590 60f4 Delete type=2 #8
+2026/03/04-00:46:25.590 60f4 Delete type=0 #10
+2026/03/04-00:46:25.590 60f4 Delete type=2 #11
+2026/03/04-00:46:25.590 60f4 Delete type=0 #13
+2026/03/04-00:46:25.590 60f4 Delete type=2 #14
+2026/03/04-00:46:25.590 60f4 Delete type=0 #16
+2026/03/04-00:46:25.590 60f4 Delete type=2 #17
+2026/03/04-00:46:38.609 b8a0 Level-0 table #24: started
+2026/03/04-00:46:38.611 b8a0 Level-0 table #24: 132945 bytes OK
+2026/03/04-00:46:38.612 b8a0 Delete type=0 #19
