@@ -90,20 +90,12 @@ class _FlashcardsBlockState extends State<FlashcardsBlock> {
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 130,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: 1,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) => _FlashCardItem(
-              title: 'Flashcards',
-              subtitle: 'From vocabulary',
-              countLabel: _loading ? 'Loading...' : '$vocabCount words',
-              colors: const [Color(0xFF5B7CFA), Color(0xFF3559E0)],
-              onTap: () => _openVocabFlashcards(context),
-            ),
-          ),
+        _FlashCardItem(
+          title: 'Flashcards',
+          subtitle: 'From vocabulary',
+          countLabel: _loading ? 'Loading...' : '$vocabCount words',
+          colors: const [Color(0xFF5B7CFA), Color(0xFF3559E0)],
+          onTap: () => _openVocabFlashcards(context),
         ),
       ],
     );
@@ -161,7 +153,8 @@ class _FlashCardItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        width: 170,
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 130),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
