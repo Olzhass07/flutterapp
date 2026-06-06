@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -145,30 +147,44 @@ class _FlashCardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardTitle = title ?? 'Flashcards';
     final gradientColors =
-        colors ?? const [Color(0xFF5B7CFA), Color(0xFF3559E0)];
+        colors ?? const [Color(0xFF5B7CFA), Color(0xFF748EFF)];
     final cardCount = countLabel ?? '';
     final cardSubtitle = subtitle;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(24),
       child: Container(
         width: double.infinity,
-        constraints: const BoxConstraints(minHeight: 130),
-        padding: const EdgeInsets.all(14),
+        constraints: const BoxConstraints(minHeight: 140),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: gradientColors[0].withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Icon(Icons.style_rounded, color: Colors.white),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.25),
+              ),
+              child: const Icon(Icons.style_rounded, color: Colors.white, size: 22),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -176,17 +192,17 @@ class _FlashCardItem extends StatelessWidget {
                   cardTitle,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 if (cardSubtitle != null) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     cardSubtitle,
                     style: const TextStyle(
                       color: Colors.white70,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -196,8 +212,9 @@ class _FlashCardItem extends StatelessWidget {
             Text(
               cardCount,
               style: const TextStyle(
-                color: Colors.white70,
-                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
               ),
             ),
           ],
@@ -223,6 +240,7 @@ class VocabFlashcardsScreen extends StatefulWidget {
 
 class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
   final Random _rng = Random();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   final List<String> _forcedQueue = [];
   late final List<Map<String, dynamic>> _entries;
   final Map<String, Map<String, dynamic>> _stats = {};
@@ -234,6 +252,7 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
   bool _showTranslation = false;
   bool _showSwipeHint = false;
   bool _isSubmitting = false;
+  bool _isSpeaking = false;
   double _dragDx = 0;
 
   @override
@@ -244,9 +263,76 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
     _scheduleIdleHint();
   }
 
+  Future<void> _speak(String text) async {
+    if (_isSpeaking) return;
+    setState(() => _isSpeaking = true);
+
+    try {
+      final audioUrl = await _getWordAudioUrl(text);
+      if (audioUrl != null) {
+        await _audioPlayer.play(UrlSource(audioUrl));
+
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        while (_audioPlayer.state == PlayerState.playing) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Pronunciation not found for this word')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString().replaceAll('Exception: ', '')}')),
+        );
+      }
+    }
+
+    if (mounted) setState(() => _isSpeaking = false);
+  }
+
+  Future<String?> _getWordAudioUrl(String word) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse(
+                'https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}'),
+          )
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List;
+        if (data.isNotEmpty) {
+          final wordData = data[0] as Map<String, dynamic>;
+          final phonetics = wordData['phonetics'] as List?;
+
+          if (phonetics != null && phonetics.isNotEmpty) {
+            for (var phonetic in phonetics) {
+              if (phonetic is Map<String, dynamic> &&
+                  phonetic.containsKey('audio')) {
+                final audio = phonetic['audio'];
+                if (audio is String && audio.isNotEmpty) {
+                  return audio;
+                }
+              }
+            }
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   @override
   void dispose() {
     _idleHintTimer?.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -267,7 +353,7 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
     if (_entries.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Flashcards'), centerTitle: true),
-        body: const Center(child: Text('Нет слов для повторения')),
+        body: const Center(child: Text('No words to practice')),
       );
     }
 
@@ -279,71 +365,63 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
     final mastery = totalSession == 0 ? 0 : ((_sessionKnow / totalSession) * 100).round();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F6FF),
+      backgroundColor: const Color(0xFFF8FAFF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        title: const Text('Flashcards'),
+        title: const Text(
+          'Flashcards',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 24,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           Positioned(
-            top: -40,
-            right: -30,
+            top: -50,
+            right: -40,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 220,
+              height: 220,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF5B7CFA).withValues(alpha: 0.10),
+                color: const Color(0xFF5B7CFA).withValues(alpha: 0.08),
               ),
             ),
           ),
           Positioned(
-            left: -40,
-            bottom: 30,
+            left: -50,
+            bottom: 20,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 200,
+              height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF22C55E).withValues(alpha: 0.08),
+                color: const Color(0xFF10B981).withValues(alpha: 0.06),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    _statPill(
-                      icon: Icons.layers_rounded,
-                      label: '${_seenCount + 1} / ${_entries.length}',
-                      color: const Color(0xFF3559E0),
-                    ),
-                    const SizedBox(width: 8),
-                    _statPill(
-                      icon: Icons.auto_graph_rounded,
-                      label: 'Mastery $mastery%',
-                      color: const Color(0xFF16A34A),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                _statsRow(mastery: mastery),
+                const SizedBox(height: 28),
                 Expanded(
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       Transform.translate(
-                        offset: const Offset(0, 14),
-                        child: _deckGhost(0.12),
+                        offset: const Offset(0, 16),
+                        child: _deckGhost(0.08),
                       ),
                       Transform.translate(
-                        offset: const Offset(0, 7),
-                        child: _deckGhost(0.20),
+                        offset: const Offset(0, 8),
+                        child: _deckGhost(0.14),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -369,19 +447,19 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                                   child: IgnorePointer(
                                     child: AnimatedOpacity(
                                       duration: const Duration(milliseconds: 120),
-                                      opacity: (_dragDx.abs() / 120).clamp(0, 0.22).toDouble(),
+                                      opacity: (_dragDx.abs() / 120).clamp(0, 0.25).toDouble(),
                                       child: DecoratedBox(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(28),
+                                          borderRadius: BorderRadius.circular(32),
                                           gradient: LinearGradient(
                                             colors: _dragDx >= 0
                                                 ? [
-                                                    const Color(0xFF22C55E),
-                                                    const Color(0x8022C55E),
+                                                    const Color(0xFF10B981),
+                                                    const Color(0x8010B981),
                                                   ]
                                                 : [
-                                                    const Color(0xFFEF4444),
-                                                    const Color(0x80EF4444),
+                                                    const Color(0xFFEF5350),
+                                                    const Color(0x80EF5350),
                                                   ],
                                             begin: _dragDx >= 0
                                                 ? Alignment.centerLeft
@@ -396,24 +474,24 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: 18,
-                                  left: 18,
+                                  top: 20,
+                                  left: 20,
                                   child: Opacity(
                                     opacity: (-_dragDx / 120).clamp(0, 1).toDouble(),
                                     child: _decisionBadge(
                                       label: 'AGAIN',
-                                      color: const Color(0xFFEF4444),
+                                      color: const Color(0xFFEF5350),
                                     ),
                                   ),
                                 ),
                                 Positioned(
-                                  top: 18,
-                                  right: 18,
+                                  top: 20,
+                                  right: 20,
                                   child: Opacity(
                                     opacity: (_dragDx / 120).clamp(0, 1).toDouble(),
                                     child: _decisionBadge(
                                       label: 'KNOW',
-                                      color: const Color(0xFF22C55E),
+                                      color: const Color(0xFF10B981),
                                     ),
                                   ),
                                 ),
@@ -425,13 +503,13 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                       Positioned(
                         left: 20,
                         right: 20,
-                        bottom: 24,
+                        bottom: 28,
                         child: IgnorePointer(
                           child: AnimatedSlide(
-                            duration: const Duration(milliseconds: 260),
-                            offset: _showSwipeHint ? Offset.zero : const Offset(0, 0.25),
+                            duration: const Duration(milliseconds: 300),
+                            offset: _showSwipeHint ? Offset.zero : const Offset(0, 0.3),
                             child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 260),
+                              duration: const Duration(milliseconds: 300),
                               opacity: _showSwipeHint ? 1 : 0,
                               child: _swipeHintCard(),
                             ),
@@ -441,14 +519,14 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
                       child: _actionButton(
                         label: 'Again',
                         icon: Icons.close_rounded,
-                        color: const Color(0xFFEF4444),
+                        color: const Color(0xFFEF5350),
                         onTap: () => _animateAndHandleAnswer(knew: false),
                       ),
                     ),
@@ -457,18 +535,103 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
                       child: _actionButton(
                         label: 'Know',
                         icon: Icons.check_rounded,
-                        color: const Color(0xFF22C55E),
+                        color: const Color(0xFF10B981),
                         onTap: () => _animateAndHandleAnswer(knew: true),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Swipe left if you do not know, swipe right if you know',
-                  style: TextStyle(color: Colors.black54, fontSize: 12),
-                ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statsRow({required int mastery}) {
+    return Row(
+      children: [
+        Expanded(
+          child: _statCard(
+            icon: Icons.layers_rounded,
+            label: 'Progress',
+            value: '${_seenCount + 1} / ${_entries.length}',
+            color: const Color(0xFF5B7CFA),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _statCard(
+            icon: Icons.trending_up_rounded,
+            label: 'Mastery',
+            value: '$mastery%',
+            color: const Color(0xFF10B981),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _statCard(
+            icon: Icons.check_circle_rounded,
+            label: 'Correct',
+            value: _sessionKnow.toString(),
+            color: const Color(0xFF06B6D4),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _statCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withValues(alpha: 0.15),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black54,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: color,
             ),
           ),
         ],
@@ -669,72 +832,178 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 170),
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: _dragDx > 12
-              ? const [Color(0xFF15803D), Color(0xFF4ADE80)]
+              ? const [Color(0xFF10B981), Color(0xFF6EE7B7)]
               : _dragDx < -12
-              ? const [Color(0xFFDC2626), Color(0xFFFB7185)]
-              : const [Color(0xFF3559E0), Color(0xFF6C8BFF)],
+              ? const [Color(0xFFEF5350), Color(0xFFFF8A80)]
+              : const [Color(0xFF5B7CFA), Color(0xFF748EFF)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
             color: (_dragDx > 12
-                    ? const Color(0xFF16A34A)
+                    ? const Color(0xFF10B981)
                     : _dragDx < -12
-                    ? const Color(0xFFEF4444)
-                    : const Color(0xFF3559E0))
-                .withValues(alpha: 0.35),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+                    ? const Color(0xFFEF5350)
+                    : const Color(0xFF5B7CFA))
+                .withValues(alpha: 0.4),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.auto_awesome_rounded, color: Colors.white70, size: 28),
-          const SizedBox(height: 12),
-          Text(
-            word,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 36,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 18),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 220),
-            child: _showTranslation
-                ? Text(
-                    'RU: $ru\nKZ: $kk',
-                    key: const ValueKey('translation'),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                : const Text(
-                    'Tap card to reveal translation',
-                    key: ValueKey('hint'),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                word,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 42,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () => _speak(word),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: _isSpeaking ? 0.4 : 0.25),
+                    boxShadow: _isSpeaking
+                        ? [
+                            BoxShadow(
+                              color: Colors.white.withValues(alpha: 0.6),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                            )
+                          ]
+                        : [],
                   ),
+                  child: Icon(
+                    _isSpeaking ? Icons.volume_up_rounded : Icons.volume_up_outlined,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) {
+              return ScaleTransition(scale: animation, child: child);
+            },
+            child: _showTranslation
+                ? Column(
+                    key: const ValueKey('translation'),
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            _translationRow(
+                              label: '🇷🇺 Russian',
+                              text: ru,
+                            ),
+                            const SizedBox(height: 12),
+                            Divider(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              height: 1,
+                            ),
+                            const SizedBox(height: 12),
+                            _translationRow(
+                              label: '🇰🇿 Kazakh',
+                              text: kk,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    key: const ValueKey('hint'),
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.touch_app_rounded, color: Colors.white70, size: 16),
+                            SizedBox(width: 8),
+                            Text(
+                              'Tap to reveal',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+          const SizedBox(height: 20),
+          Opacity(
+            opacity: _showTranslation ? 0.7 : 0.4,
+            child: const Icon(Icons.swipe_left_rounded, color: Colors.white30, size: 24),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _translationRow({required String label, required String text}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white60,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            height: 1.3,
+          ),
+        ),
+      ],
     );
   }
 
@@ -750,19 +1019,26 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
 
   Widget _decisionBadge({required String label, required Color color}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
-        color: color.withValues(alpha: 0.20),
-        border: Border.all(color: color, width: 1.4),
+        color: color.withValues(alpha: 0.25),
+        border: Border.all(color: color, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.2),
+            blurRadius: 8,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.w800,
-          fontSize: 12,
-          letterSpacing: 0.6,
+          color: Colors.white,
+          fontWeight: FontWeight.w900,
+          fontSize: 11,
+          letterSpacing: 1,
         ),
       ),
     );
@@ -770,30 +1046,29 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
 
   Widget _swipeHintCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(18),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.swipe_rounded, color: Color(0xFF3559E0), size: 20),
-          SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Swipe right if you know this word, or left if you do not.',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 12.5,
-                fontWeight: FontWeight.w600,
-              ),
+          const Icon(Icons.swipe_left_rounded, color: Color(0xFF5B7CFA), size: 18),
+          const SizedBox(width: 8),
+          const Text(
+            'Swipe right to know, left to repeat',
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -809,60 +1084,36 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Ink(
-        height: 52,
+        height: 56,
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withValues(alpha: 0.45)),
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 10),
             Text(
               label,
               style: TextStyle(
                 color: color,
                 fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _statPill({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-        ],
       ),
     );
   }

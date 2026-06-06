@@ -1,18 +1,2 @@
-2026/06/01-16:27:03.663 1af8 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.fd8af86d\flutter_tools_chrome_device.a1b85a6\Default\Local Storage\leveldb/MANIFEST-000001
-2026/06/01-16:27:03.670 1af8 Recovering log #27
-2026/06/01-16:27:03.671 1af8 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.fd8af86d\flutter_tools_chrome_device.a1b85a6\Default\Local Storage\leveldb/000027.log 
-2026/06/01-16:27:03.672 1af8 Delete type=0 #3
-2026/06/01-16:27:03.672 1af8 Delete type=2 #7
-2026/06/01-16:27:03.672 1af8 Delete type=2 #9
-2026/06/01-16:27:03.672 1af8 Delete type=2 #11
-2026/06/01-16:27:03.672 1af8 Delete type=0 #12
-2026/06/01-16:27:03.672 1af8 Delete type=2 #13
-2026/06/01-16:27:03.672 1af8 Delete type=0 #15
-2026/06/01-16:27:03.672 1af8 Delete type=2 #17
-2026/06/01-16:27:03.674 1af8 Delete type=2 #19
-2026/06/01-16:27:03.674 1af8 Delete type=0 #19
-2026/06/01-16:27:03.674 1af8 Delete type=2 #20
-2026/06/01-16:27:03.674 1af8 Delete type=0 #21
-2026/06/01-16:27:03.674 1af8 Delete type=2 #22
-2026/06/01-16:27:03.674 1af8 Delete type=0 #24
-2026/06/01-16:27:03.674 1af8 Delete type=2 #25
+2026/06/06-15:36:01.847 e8c8 Creating DB C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.a5ad8c95\flutter_tools_chrome_device.9c8d899\Default\Local Storage\leveldb since it was missing.
+2026/06/06-15:36:01.860 e8c8 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.a5ad8c95\flutter_tools_chrome_device.9c8d899\Default\Local Storage\leveldb/MANIFEST-000001
