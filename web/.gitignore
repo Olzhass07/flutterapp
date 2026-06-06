@@ -6,12 +6,19 @@
 .pub-cache/
 .pub/
 build/
+.web_tool/
 
 # Локальные конфигурации платформ
 android/local.properties
 android/.gradle/
 ios/.generated/
-**/*.g.dart
+
+# Секреты, ключи и переменные окружения
+*.env
+*.env.*
+!*.env.example
+*.keystore
+*.jks
 
 # Настройки сред разработки (IDE)
 .idea/
