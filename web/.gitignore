@@ -1,1 +1,21 @@
-/build/
+# Файлы сборки Flutter и Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Локальные конфигурации платформ
+android/local.properties
+android/.gradle/
+ios/.generated/
+**/*.g.dart
+
+# Настройки сред разработки (IDE)
+.idea/
+.vscode/
+*.iml
+*.iws
+.DS_Store
