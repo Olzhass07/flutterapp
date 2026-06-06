@@ -1,13 +1,25 @@
-2026/05/11-00:32:54.113 d3e4 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.577e5143\flutter_tools_chrome_device.9d803bff\Default\Local Storage\leveldb/MANIFEST-000001
-2026/05/11-00:32:54.117 d3e4 Recovering log #24
-2026/05/11-00:32:54.119 d3e4 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.577e5143\flutter_tools_chrome_device.9d803bff\Default\Local Storage\leveldb/000024.log 
-2026/05/11-00:32:54.120 d3e4 Delete type=0 #3
-2026/05/11-00:32:54.120 d3e4 Delete type=2 #7
-2026/05/11-00:32:54.120 d3e4 Delete type=2 #9
-2026/05/11-00:32:54.120 d3e4 Delete type=2 #11
-2026/05/11-00:32:54.120 d3e4 Delete type=0 #12
-2026/05/11-00:32:54.120 d3e4 Delete type=2 #13
-2026/05/11-00:32:54.120 d3e4 Delete type=0 #15
-2026/05/11-00:32:54.120 d3e4 Delete type=0 #19
-2026/05/11-00:32:54.120 d3e4 Delete type=2 #20
-2026/05/11-00:32:54.120 d3e4 Delete type=0 #21
+2026/06/01-14:08:30.987 9b78 Reusing MANIFEST C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.3997bf93\flutter_tools_chrome_device.94a8e9f0\Default\Local Storage\leveldb/MANIFEST-000001
+2026/06/01-14:08:30.993 9b78 Recovering log #24
+2026/06/01-14:08:30.996 9b78 Reusing old log C:\Users\Olzhas\AppData\Local\Temp\flutter_tools.3997bf93\flutter_tools_chrome_device.94a8e9f0\Default\Local Storage\leveldb/000024.log 
+2026/06/01-14:08:30.997 9b78 Delete type=0 #3
+2026/06/01-14:08:30.997 9b78 Delete type=2 #7
+2026/06/01-14:08:30.997 9b78 Delete type=2 #9
+2026/06/01-14:08:30.997 9b78 Delete type=2 #11
+2026/06/01-14:08:30.997 9b78 Delete type=0 #12
+2026/06/01-14:08:30.997 9b78 Delete type=2 #13
+2026/06/01-14:08:30.997 9b78 Delete type=0 #15
+2026/06/01-14:08:30.997 9b78 Delete type=0 #19
+2026/06/01-14:08:30.997 9b78 Delete type=2 #20
+2026/06/01-14:08:30.997 9b78 Delete type=0 #21
+2026/06/01-16:04:32.576 9a64 Level-0 table #28: started
+2026/06/01-16:04:32.592 9a64 Level-0 table #28: 29953 bytes OK
+2026/06/01-16:04:32.595 9a64 Delete type=0 #24
+2026/06/01-16:04:32.596 9a64 Compacting 4@0 + 1@1 files
+2026/06/01-16:04:32.605 9a64 Generated table #29@0: 222 keys, 15798 bytes
+2026/06/01-16:04:32.606 9a64 Compacted 4@0 + 1@1 files => 15798 bytes
+2026/06/01-16:04:32.606 9a64 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/06/01-16:04:32.608 9a64 Delete type=2 #17
+2026/06/01-16:04:32.608 9a64 Delete type=2 #19
+2026/06/01-16:04:32.609 9a64 Delete type=2 #22
+2026/06/01-16:04:32.609 9a64 Delete type=2 #25
+2026/06/01-16:04:32.609 9a64 Delete type=2 #28
