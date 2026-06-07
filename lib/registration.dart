@@ -62,7 +62,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         content: Text(message),
         backgroundColor: isError ? Colors.redAccent : Colors.green,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -87,7 +88,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
       if (response.statusCode == 200) {
         if (mounted) {
-          _showSnackBar(data['message'] ?? 'Registration successful!');
+          _showSnackBar(data['message'] ?? 'Регистрация успешна!');
 
           try {
             final loginRes = await http.post(
@@ -109,13 +110,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 }
               });
             } else {
-              _showSnackBar(loginData['message'] ?? 'Auto-login failed. Please sign in.', isError: true);
+              _showSnackBar(loginData['message'] ?? 'Ошибка входа. Войди вручную.', isError: true);
               Future.delayed(const Duration(milliseconds: 800), () {
                 if (mounted) Navigator.pushReplacementNamed(context, '/login');
               });
             }
           } catch (_) {
-            _showSnackBar('Auto-login failed. Please sign in.', isError: true);
+            _showSnackBar('Ошибка входа. Войди вручную.', isError: true);
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) Navigator.pushReplacementNamed(context, '/login');
             });
@@ -123,12 +124,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         }
       } else {
         if (mounted) {
-          _showSnackBar(data['message'] ?? 'Error during registration', isError: true);
+          _showSnackBar(data['message'] ?? 'Ошибка регистрации', isError: true);
         }
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar("Error: $e", isError: true);
+        _showSnackBar("Ошибка: $e", isError: true);
       }
     } finally {
       if (mounted) setState(() => isSubmitting = false);
@@ -138,52 +139,64 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6C63FF).withOpacity(0.1),
-                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(Icons.person_add_alt_1_rounded, size: 70, color: Color(0xFF6C63FF)),
+                  child: const Icon(
+                    Icons.person_add_alt_rounded,
+                    size: 50,
+                    color: Colors.white,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 Text(
-                  "Create Account",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
-                      ),
+                  "Присоединись",
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Start your language journey today!",
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                Text(
+                  "Начни изучать языки сегодня",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade500,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                const SizedBox(height: 48),
-
+                const SizedBox(height: 40),
                 _buildTextField(
                   controller: nameController,
-                  label: "Name",
-                  icon: Icons.person_outline,
+                  label: "Имя",
+                  icon: Icons.person_outline_rounded,
                   errorText: nameError,
                   onChanged: (_) {
                     if (nameError != null) setState(() => nameError = null);
                   },
                 ),
                 const SizedBox(height: 16),
-
                 _buildTextField(
                   controller: emailController,
                   label: "Email",
-                  icon: Icons.email_outlined,
+                  icon: Icons.mail_outline_rounded,
                   keyboardType: TextInputType.emailAddress,
                   errorText: emailError,
                   onChanged: (_) {
@@ -191,17 +204,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-
                 _buildTextField(
                   controller: passwordController,
-                  label: "Password",
-                  icon: Icons.lock_outline,
+                  label: "Пароль",
+                  icon: Icons.lock_outline_rounded,
                   obscure: _obscurePassword,
                   errorText: passwordError,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: Colors.grey.shade600,
+                      _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      color: Colors.grey.shade400,
+                      size: 20,
                     ),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
@@ -210,17 +223,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-
                 _buildTextField(
                   controller: confirmPasswordController,
-                  label: "Confirm Password",
-                  icon: Icons.lock_outline,
+                  label: "Подтвердить пароль",
+                  icon: Icons.lock_outline_rounded,
                   obscure: _obscureConfirmPassword,
                   errorText: confirmPasswordError,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: Colors.grey.shade600,
+                      _obscureConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      color: Colors.grey.shade400,
+                      size: 20,
                     ),
                     onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                   ),
@@ -228,8 +241,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     if (confirmPasswordError != null) setState(() => confirmPasswordError = null);
                   },
                 ),
-                const SizedBox(height: 40),
-
+                const SizedBox(height: 48),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -240,37 +252,45 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                     child: isSubmitting
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
                           )
                         : const Text(
-                            "Sign Up",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            "Зарегистрироваться",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                   ),
                 ),
-                const SizedBox(height: 32),
-
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Already have an account? ",
-                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                    Text(
+                      "Уже есть аккаунт? ",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 15,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, '/login'),
                       child: const Text(
-                        "Log In",
+                        "Войти",
                         style: TextStyle(
                           color: Color(0xFF6C63FF),
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                           fontSize: 15,
                         ),
                       ),
@@ -303,32 +323,48 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           obscureText: obscure,
           keyboardType: keyboardType,
           onChanged: onChanged,
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.grey.shade600),
-            prefixIcon: Icon(icon, color: const Color(0xFF6C63FF)),
+            labelStyle: TextStyle(
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.w500,
+            ),
+            prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 20),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Colors.grey.shade50,
             contentPadding: const EdgeInsets.symmetric(vertical: 16),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: errorText != null ? Colors.red.shade300 : Colors.grey.shade200),
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: errorText != null ? Colors.red.shade300 : Colors.grey.shade200,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: errorText != null ? Colors.red : const Color(0xFF6C63FF), width: 2),
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: errorText != null ? Colors.red : const Color(0xFF6C63FF),
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Colors.red),
             ),
           ),
         ),
         if (errorText != null) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.only(left: 12),
             child: Text(
               errorText,
-              style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

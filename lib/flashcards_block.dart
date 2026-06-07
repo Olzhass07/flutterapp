@@ -297,10 +297,13 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
 
   Future<String?> _getWordAudioUrl(String word) async {
     try {
+      final cleanWord = word.toLowerCase().trim();
+
+      // Try primary API
       final response = await http
           .get(
             Uri.parse(
-                'https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}'),
+                'https://api.dictionaryapi.dev/api/v2/entries/en/$cleanWord'),
           )
           .timeout(const Duration(seconds: 5));
 
@@ -322,9 +325,21 @@ class _VocabFlashcardsScreenState extends State<VocabFlashcardsScreen> {
             }
           }
         }
+      } else if (response.statusCode == 404) {
+        print('❌ Word not found: "$cleanWord" (possible spelling error)');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Слово "$cleanWord" не найдено в словаре'),
+              duration: const Duration(seconds: 2),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
       }
       return null;
     } catch (e) {
+      print('⚠️ Audio API error: $e');
       return null;
     }
   }

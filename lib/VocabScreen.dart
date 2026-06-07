@@ -37,6 +37,20 @@ class _VocabScreenState extends State<VocabScreen> {
   Future<void> _addWord() async {
     final word = _controller.text.trim();
     if (word.isEmpty) return;
+
+    // Validate word exists in dictionary
+    if (!await _isValidWord(word)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Слово "$word" не найдено в словаре.\nПроверьте орфографию.'),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     setState(() => _saving = true);
     try {
       final ruF = _translator.translate(word, to: 'ru');
@@ -63,6 +77,21 @@ class _VocabScreenState extends State<VocabScreen> {
       );
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<bool> _isValidWord(String word) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse(
+                'https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}'),
+          )
+          .timeout(const Duration(seconds: 3));
+
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
     }
   }
 

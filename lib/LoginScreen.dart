@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final data = jsonDecode(res.body);
 
       if (res.statusCode == 200 && data['token'] != null) {
-        _showSnackBar("Login successful!");
+        _showSnackBar("Добро пожаловать!");
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -47,10 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        _showSnackBar(data['message'] ?? 'Login failed!', isError: true);
+        _showSnackBar(data['message'] ?? 'Ошибка входа', isError: true);
       }
     } catch (e) {
-      _showSnackBar("Failed to connect", isError: true);
+      _showSnackBar("Ошибка подключения", isError: true);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -64,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Text(message),
         backgroundColor: isError ? Colors.redAccent : Colors.green,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -72,73 +73,87 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 24),
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6C63FF).withOpacity(0.1),
-                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(Icons.language_rounded, size: 80, color: Color(0xFF6C63FF)),
+                  child: const Icon(
+                    Icons.language_rounded,
+                    size: 50,
+                    color: Colors.white,
+                  ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
                 Text(
-                  "Welcome Back!",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
-                      ),
+                  "С возвращением!",
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Log in to continue your journey 🌍",
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                Text(
+                  "Продолжи изучение языка",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade500,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 48),
-
                 _buildTextField(
                   controller: emailController,
                   label: "Email",
-                  icon: Icons.email_outlined,
+                  icon: Icons.mail_outline_rounded,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
-
                 _buildTextField(
                   controller: passwordController,
-                  label: "Password",
-                  icon: Icons.lock_outline,
+                  label: "Пароль",
+                  icon: Icons.lock_outline_rounded,
                   obscure: _obscurePassword,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: Colors.grey.shade600,
+                      _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      color: Colors.grey.shade400,
+                      size: 20,
                     ),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
                 const SizedBox(height: 12),
-                
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () => Navigator.pushNamed(context, '/forgot-password'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF6C63FF),
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                    child: Text(
+                      'Забыли пароль?',
+                      style: TextStyle(
+                        color: const Color(0xFF6C63FF),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
-                    child: const Text('Забыли пароль?'),
                   ),
                 ),
-                const SizedBox(height: 32),
-
+                const SizedBox(height: 40),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -149,37 +164,45 @@ class _LoginScreenState extends State<LoginScreen> {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
                           )
                         : const Text(
-                            "Login",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            "Войти",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                   ),
                 ),
-
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Don’t have an account? ",
-                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                    Text(
+                      "Нет аккаунта? ",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 15,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, '/register'),
                       child: const Text(
-                        "Sign Up",
+                        "Создай",
                         style: TextStyle(
                           color: Color(0xFF6C63FF),
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                           fontSize: 15,
                         ),
                       ),
@@ -206,22 +229,29 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: controller,
       obscureText: obscure,
       keyboardType: keyboardType,
-      style: const TextStyle(fontSize: 16),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.grey.shade600),
-        prefixIcon: Icon(icon, color: const Color(0xFF6C63FF)),
+        labelStyle: TextStyle(
+          color: Colors.grey.shade500,
+          fontWeight: FontWeight.w500,
+        ),
+        prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.grey.shade50,
         contentPadding: const EdgeInsets.symmetric(vertical: 16),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.grey.shade200),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.red),
         ),
       ),
     );
